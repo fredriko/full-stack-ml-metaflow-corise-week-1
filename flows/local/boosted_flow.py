@@ -37,7 +37,8 @@ class BSTFlow(FlowSpec):
         # make prediction
         bst = xgb.Booster()
         bst.load_model("model.json")
-        preds = bst.predict(dtest)
+        self.preds = bst.predict(dtest)
+        
         self.next(self.end)
 
     @step
@@ -45,6 +46,9 @@ class BSTFlow(FlowSpec):
         """
         End of flow!
         """
+        print(f"Got preds: {self.preds}")
+        print(f"Preds type: {type(self.preds)}")
+        print(f"Preds shape: {self.preds.shape}")
         print("BSTFlow is all done.")
 
 

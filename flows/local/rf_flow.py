@@ -48,6 +48,7 @@ class RF_Flow(FlowSpec):
         """
         End of flow!
         """
+        print(f"Got scores: {self.scores}")
         print("RF_Flow is all done.")
 
 
