@@ -110,7 +110,15 @@ class BaselineNLPFlow(FlowSpec):
     @step
     def end(self):
 
-        def get_examples(df: pd.DataFrame, looking_for_label: int, looking_for_prediction: int, label_column: str = "label", prediction_column: str = "prediction", review_column: str = "review") -> Tuple[int, str]:
+        def get_examples(
+            df: pd.DataFrame, 
+            looking_for_label: int, 
+            looking_for_prediction: int, 
+            label_column: str = "label", 
+            prediction_column: str = "prediction", 
+            review_column: str = "review"
+            ) -> Tuple[int, str]:
+            
             examples_df = df[(df[label_column] == looking_for_label) & (df[prediction_column] == looking_for_prediction)]
             examples = (examples_df[review_column].str.replace("\n", " ")).sample(10, random_state=42).tolist()
             examples = "".join([f"* {e}\n" for e in examples])
@@ -138,11 +146,9 @@ class BaselineNLPFlow(FlowSpec):
         current.card.append(Markdown("## Examples of False Negatives"))
         # TODO: compute the false positive predictions where the baseline is 0 and the valdf label is 1. 
         # TODO: display the false_negatives dataframe using metaflow.cards
-        false_negatives_df = self.valdf[(self.valdf["label"] == 1) & (self.valdf["prediction"] == 0)]
-        current.card.append(Markdown(f"Total number of false negatives, i.e., when the true label is POSITIVE (1), but the classifier predicted NEGATIVE (0): {false_negatives_df.shape[0]}"))
-        false_negatives = false_negatives_df["review"].sample(10, random_state=42).tolist()
-        false_negatives = "".join([f"* {fn}\n" for fn in false_negatives])
-        current.card.append(Markdown(f"Examples:\n{false_negatives}"))
+        num_false_negatives, examples = get_examples(self.valdf, 1, 0)
+        current.card.append(Markdown(f"Total number of false negatives, i.e., when the true label is POSITIVE (1), but the classifier predicted NEGATIVE (0): {num_false_negatives}"))
+        current.card.append(Markdown(f"Examples:\n{examples}"))
 
 
 if __name__ == '__main__':
